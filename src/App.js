@@ -37,7 +37,7 @@ export default function App() {
     travelMode: "",
   });
 
-  const [itinerary, setItinerary] = useState("");
+  const [itinerary, setItinerary] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -58,7 +58,7 @@ export default function App() {
 
     setError("");
     setLoading(true);
-    setItinerary("");
+    setItinerary([]);
 
     try {
       const response = await fetch("http://localhost:3001/generate-itinerary", {
@@ -72,7 +72,9 @@ export default function App() {
       }
 
       const data = await response.json();
-      setItinerary(data.itinerary);
+
+      // Since backend sends itinerary as an array
+      setItinerary(data.itinerary || []);
     } catch (err) {
       setError(err.message || "Failed to fetch itinerary");
     } finally {
@@ -122,10 +124,14 @@ export default function App() {
         </button>
       </form>
 
-      {itinerary && (
-        <div style={{ marginTop: 30, whiteSpace: "pre-line", backgroundColor: "#f0f8ff", padding: 20, borderRadius: 8 }}>
+      {itinerary.length > 0 && (
+        <div style={{ marginTop: 30, backgroundColor: "#f0f8ff", padding: 20, borderRadius: 8 }}>
           <h2>Your Itinerary</h2>
-          <p>{itinerary}</p>
+          <ul>
+            {itinerary.map((day, index) => (
+              <li key={index}>{day}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
